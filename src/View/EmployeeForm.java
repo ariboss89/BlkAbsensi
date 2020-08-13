@@ -13,7 +13,9 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.sql.Date;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import javax.swing.JOptionPane;
@@ -41,12 +43,13 @@ public class EmployeeForm extends javax.swing.JFrame {
     private String agama;
     private String idbagian;
     private String alamat;
-    
+    private String jabatan;
+
     TableModel tbl = new TableModel();
     private String rs[][];
-    String[] namaKolom = {"Nip", "Nama", "Tanggal", "Pekerjaan", "Status", "Agama", "Id Bagian", "Alamat"};
+    String[] namaKolom = {"Nip", "Nama", "Tanggal", "Pekerjaan", "Status", "Agama", "Id Bagian", "Jabatan", "Alamat"};
     int jmlKolom = namaKolom.length;
-    int[] lebar = {200, 500, 300, 300, 300, 400, 300, 500};
+    int[] lebar = {200, 500, 300, 300, 300, 400, 300, 300, 500};
 
     public EmployeeForm() {
         initComponents();
@@ -54,14 +57,15 @@ public class EmployeeForm extends javax.swing.JFrame {
         int x = (dim.width - getWidth()) / 2;
         int y = (dim.height - getHeight()) / 2;
         setLocation(x, y);
-        ShowBagian();       
+        ShowBagian();
         Refresh();
     }
 
     private void Refresh() {
-        txtNik.requestFocus();
+        //txtNik.requestFocus();
         txtNik.setText("");
         txtNama.setText("");
+        txtNama.requestFocus();
         jDateChooser1.setDate(null);
         cbStPekerjaan.setSelectedIndex(0);
         cbStPerkawinan.setSelectedIndex(0);
@@ -69,8 +73,9 @@ public class EmployeeForm extends javax.swing.JFrame {
         cbBagian.setSelectedIndex(0);
         txtAlamat.setText("");
         jTextField1.setText("");
-       btnSave.setEnabled(true);
+        btnSave.setEnabled(true);
         btnUpdate.setEnabled(false);
+        NIP();
     }
 
     private void ShowBagian() {
@@ -86,8 +91,8 @@ public class EmployeeForm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Data Bagian Tidak Bisa di Tampilkan");
         }
     }
-    
-    private void ShowNamaBagian(){
+
+    private void ShowNamaBagian() {
         java.sql.Connection conn = new ConnectionDatabase().connect();
         try {
             java.sql.Statement stmt = conn.createStatement();
@@ -97,6 +102,34 @@ public class EmployeeForm extends javax.swing.JFrame {
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Data Bagian Tidak Bisa di Tampilkan");
+        }
+    }
+
+    private void NIP() {
+        java.sql.Connection conn = new ConnectionDatabase().connect();
+        try {
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery("select *from tb_pegawai ORDER BY nip DESC");
+            if (rs.first() == false) {
+                txtNik.setText("PGW0001");
+            } else {
+                rs.first();
+                System.out.println("COT: " + rs.getString("nip").substring(3, 7));
+                int nokirim = Integer.valueOf(rs.getString("nip").substring(3, 7)) + 1;
+                System.out.println(nokirim);
+                if (nokirim < 10) {
+                    txtNik.setText("PGW000" + nokirim);
+                } else if (nokirim >= 10 && nokirim < 100) {
+                    txtNik.setText("PGW00" + nokirim);
+                } else if (nokirim >= 100 && nokirim < 1000) {
+                    txtNik.setText("PGW0" + nokirim);
+                } else if (nokirim >= 1000 && nokirim < 9999) {
+                    txtNik.setText("PGW" + nokirim);
+                }
+            }
+            rs.close();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Data tidak ditemukan");
         }
     }
 
@@ -133,6 +166,8 @@ public class EmployeeForm extends javax.swing.JFrame {
         btnUpdate = new javax.swing.JButton();
         btnRefresh = new javax.swing.JButton();
         btnCetak = new javax.swing.JButton();
+        jLabel11 = new javax.swing.JLabel();
+        cbJabatan = new javax.swing.JComboBox();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jTextField1 = new javax.swing.JTextField();
@@ -178,6 +213,7 @@ public class EmployeeForm extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel9.setText("ALAMAT");
 
+        txtNik.setEditable(false);
         txtNik.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtNik.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -252,6 +288,17 @@ public class EmployeeForm extends javax.swing.JFrame {
             }
         });
 
+        jLabel11.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel11.setText("JABATAN");
+
+        cbJabatan.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        cbJabatan.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "PILIH", "Ka. UPT BLKPP", "Instruktur Ahli Madya", "Instruktur Penyelia", "Kepala Tata Usaha BLK", "Kasi. Pelatihan Kerja", "Kasi. Pengembangan Produktifitas", "INSTRUKTUR", "Penyusun Bahan Materi Bimbingan", "Instruktur Ahli Muda", "Instruktur Ahli Pertama", "Penyusun Bahan Kerjasama Pelatihan", "Penyusun Bahan Materi Bimbingan", "Instruktur Ahli Pertama", "Instruktur Terampil", "Staff" }));
+        cbJabatan.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbJabatanItemStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -266,16 +313,17 @@ public class EmployeeForm extends javax.swing.JFrame {
                     .addComponent(jLabel9)
                     .addComponent(jLabel4)
                     .addComponent(jLabel8)
-                    .addComponent(jLabel2))
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel11))
                 .addGap(95, 95, 95)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cbJabatan, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnCetak, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(txtNik)
                     .addComponent(cbStPekerjaan, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnSave)
+                        .addComponent(btnSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnUpdate)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -319,9 +367,13 @@ public class EmployeeForm extends javax.swing.JFrame {
                     .addComponent(jLabel8)
                     .addComponent(cbBagian, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11)
+                    .addComponent(cbJabatan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel9)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSave)
@@ -382,7 +434,7 @@ public class EmployeeForm extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(10, 10, 10)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 803, Short.MAX_VALUE))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 801, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel10)
@@ -435,6 +487,7 @@ public class EmployeeForm extends javax.swing.JFrame {
         agama = cbAgama.getSelectedItem().toString();
         idbagian = pgw.getIdbagian();
         alamat = txtAlamat.getText();
+        jabatan = cbJabatan.getSelectedItem().toString();
 
         if (nip.equals("")) {
             JOptionPane.showMessageDialog(null, "Nip Kosong !!, Silahkan di Isi Dahulu");
@@ -442,7 +495,7 @@ public class EmployeeForm extends javax.swing.JFrame {
         } else if (nama.equals("")) {
             JOptionPane.showMessageDialog(null, "Nama Kosong !!, Silahkan di Isi Dahulu");
             txtNama.requestFocus();
-        } else if (jDateChooser1.getDate()== null) {
+        } else if (jDateChooser1.getDate() == null) {
             JOptionPane.showMessageDialog(null, "Tanggal Kosong !!, Silahkan di Isi Dahulu");
             jDateChooser1.requestFocus();
         } else if (cbStPekerjaan.getSelectedItem().equals("")) {
@@ -463,10 +516,13 @@ public class EmployeeForm extends javax.swing.JFrame {
         } else if (alamat.equals("")) {
             JOptionPane.showMessageDialog(null, "Alamat Kosong !!, Silahkan di Isi Dahulu");
             txtAlamat.requestFocus();
+        } else if (cbJabatan.getSelectedItem().equals("PILIH")) {
+            JOptionPane.showMessageDialog(null, "Jabatan Belum di Pilih !!, Silahkan di Pilih Dahulu");
+            cbJabatan.requestFocus();
         } else {
             SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd");
             Date tgl = Date.valueOf(spf.format(jDateChooser1.getDate()));
-            pgw.Save(nip, nama, tgl, pekerjaan, status, agama, idbagian, alamat);
+            pgw.Save(nip, nama, tgl, pekerjaan, status, agama, idbagian, jabatan, alamat);
             Refresh();
         }
 
@@ -499,12 +555,14 @@ public class EmployeeForm extends javax.swing.JFrame {
         btnSave.setEnabled(false);
         txtNik.setText(jTable1.getValueAt(baris, 0).toString());
         txtNama.setText(jTable1.getValueAt(baris, 1).toString());
+        jDateChooser1.setDate(Date.valueOf(jTable1.getValueAt(baris, 2).toString()));
         cbStPekerjaan.setSelectedItem(jTable1.getValueAt(baris, 3).toString());
         cbStPerkawinan.setSelectedItem(jTable1.getValueAt(baris, 4).toString());
         cbAgama.setSelectedItem(jTable1.getValueAt(baris, 5).toString());
         pgw.setIdbagian(jTable1.getValueAt(baris, 6).toString());
         ShowNamaBagian();
-        txtAlamat.setText(jTable1.getValueAt(baris, 7).toString());
+        cbJabatan.setSelectedItem(jTable1.getValueAt(baris, 7).toString());
+        txtAlamat.setText(jTable1.getValueAt(baris, 8).toString());
         btnUpdate.setEnabled(true);
     }//GEN-LAST:event_jTable1MouseClicked
 
@@ -517,6 +575,7 @@ public class EmployeeForm extends javax.swing.JFrame {
         agama = cbAgama.getSelectedItem().toString();
         idbagian = pgw.getIdbagian();
         alamat = txtAlamat.getText();
+        jabatan = cbJabatan.getSelectedItem().toString();
 
         if (nip.equals("")) {
             JOptionPane.showMessageDialog(null, "Nip Kosong !!, Silahkan di Isi Dahulu");
@@ -524,7 +583,7 @@ public class EmployeeForm extends javax.swing.JFrame {
         } else if (nama.equals("")) {
             JOptionPane.showMessageDialog(null, "Nama Kosong !!, Silahkan di Isi Dahulu");
             txtNama.requestFocus();
-        } else if (jDateChooser1.getDate()== null) {
+        } else if (jDateChooser1.getDate() == null) {
             JOptionPane.showMessageDialog(null, "Tanggal Kosong !!, Silahkan di Isi Dahulu");
             jDateChooser1.requestFocus();
         } else if (cbStPekerjaan.getSelectedItem().equals("")) {
@@ -545,10 +604,13 @@ public class EmployeeForm extends javax.swing.JFrame {
         } else if (alamat.equals("")) {
             JOptionPane.showMessageDialog(null, "Alamat Kosong !!, Silahkan di Isi Dahulu");
             txtAlamat.requestFocus();
+        } else if (cbJabatan.getSelectedItem().equals("PILIH")) {
+            JOptionPane.showMessageDialog(null, "Jabatan Belum di Pilih !!, Silahkan di Pilih Dahulu");
+            cbJabatan.requestFocus();
         } else {
             SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd");
             Date tgl = Date.valueOf(spf.format(jDateChooser1.getDate()));
-            pgw.Update(nip, nama, tgl, pekerjaan, status, agama, idbagian, alamat);
+            pgw.Update(nip, nama, tgl, pekerjaan, status, agama, idbagian, jabatan, alamat);
             Refresh();
         }
     }//GEN-LAST:event_btnUpdateActionPerformed
@@ -558,11 +620,10 @@ public class EmployeeForm extends javax.swing.JFrame {
         nip = txtNik.getText().trim();
         if (evt.getKeyChar() == KeyEvent.VK_DELETE) {
             int ok = JOptionPane.showConfirmDialog(null, "Apakah Anda Yakin Ingin Menghapus ?", "Konnfirmasi", JOptionPane.YES_NO_OPTION);
-            if(ok == 0){
+            if (ok == 0) {
                 pgw.Delete(nip);
                 Refresh();
-            }
-            else{
+            } else {
 
             }
         }
@@ -583,8 +644,8 @@ public class EmployeeForm extends javax.swing.JFrame {
             getToolkit().beep();
             evt.consume();
         }
-        
-        if(txtNama.getText().length()== 0 && karakter == KeyEvent.VK_SPACE){
+
+        if (txtNama.getText().length() == 0 && karakter == KeyEvent.VK_SPACE) {
             getToolkit().beep();
             evt.consume();
         }
@@ -594,7 +655,7 @@ public class EmployeeForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         char karakter = evt.getKeyChar();
 
-        if(txtNik.getText().length()== 0 && karakter == KeyEvent.VK_SPACE){
+        if (txtNik.getText().length() == 0 && karakter == KeyEvent.VK_SPACE) {
             getToolkit().beep();
             evt.consume();
         }
@@ -604,7 +665,7 @@ public class EmployeeForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         char karakter = evt.getKeyChar();
 
-        if(txtAlamat.getText().length()== 0 && karakter == KeyEvent.VK_SPACE){
+        if (txtAlamat.getText().length() == 0 && karakter == KeyEvent.VK_SPACE) {
             getToolkit().beep();
             evt.consume();
         }
@@ -614,7 +675,7 @@ public class EmployeeForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         char karakter = evt.getKeyChar();
 
-        if(jTextField1.getText().length()== 0 && karakter == KeyEvent.VK_SPACE){
+        if (jTextField1.getText().length() == 0 && karakter == KeyEvent.VK_SPACE) {
             getToolkit().beep();
             evt.consume();
         }
@@ -622,18 +683,22 @@ public class EmployeeForm extends javax.swing.JFrame {
 
     private void btnCetakActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCetakActionPerformed
         // TODO add your handling code here:
-        java.sql.Connection conn= new ConnectionDatabase().connect();
-            try {
-                HashMap parameter = new HashMap();
-                File file = new File("src/Report/LaporanDataPegawai.jasper");
-                JasperReport jp = (JasperReport) JRLoader.loadObject(file);
-                JasperPrint jasperPrint = JasperFillManager.fillReport(jp, parameter, conn);
-                JasperViewer.viewReport(jasperPrint, false);
-                JasperViewer.setDefaultLookAndFeelDecorated(true);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, e);
-            }
+        java.sql.Connection conn = new ConnectionDatabase().connect();
+        try {
+            HashMap parameter = new HashMap();
+            File file = new File("src/Report/LaporanDataPegawai.jasper");
+            JasperReport jp = (JasperReport) JRLoader.loadObject(file);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jp, parameter, conn);
+            JasperViewer.viewReport(jasperPrint, false);
+            JasperViewer.setDefaultLookAndFeelDecorated(true);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
     }//GEN-LAST:event_btnCetakActionPerformed
+
+    private void cbJabatanItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbJabatanItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbJabatanItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -677,11 +742,13 @@ public class EmployeeForm extends javax.swing.JFrame {
     private javax.swing.JButton btnUpdate;
     private javax.swing.JComboBox cbAgama;
     private javax.swing.JComboBox cbBagian;
+    private javax.swing.JComboBox cbJabatan;
     private javax.swing.JComboBox cbStPekerjaan;
     private javax.swing.JComboBox cbStPerkawinan;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

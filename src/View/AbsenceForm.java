@@ -8,19 +8,17 @@ package View;
 import Controller.ConnectionDatabase;
 import Model.Absence;
 import Model.TableModel;
+import Model.tb_user;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.sql.Connection;
 import java.sql.Date;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.LocalDate;
 import javax.swing.JOptionPane;
-import javax.swing.Timer;
 
 /**
  *
@@ -41,6 +39,9 @@ public class AbsenceForm extends javax.swing.JFrame {
     private String masuk;
     private String pulang;
     private String ket;
+    private ConnectionDatabase conn;
+    private Statement stmt;
+    private ResultSet res;
 
     public AbsenceForm() {
         initComponents();
@@ -49,16 +50,18 @@ public class AbsenceForm extends javax.swing.JFrame {
         int y = (dim.height - getHeight()) / 2;
         setLocation(x, y);
         Refresh();
+        CekNip();
+        CurrentDate();
     }
 
     private void SearchNIP() {
         java.sql.Connection conn = new ConnectionDatabase().connect();
         try {
             java.sql.Statement stmt = conn.createStatement();
-            java.sql.ResultSet res = stmt.executeQuery("select *from tb_pegawai where nip like '%" + txtNip.getText() + "%'");
+            java.sql.ResultSet res = stmt.executeQuery("select *from tb_pegawai where nip = '" + txtNip.getText() + "'");
             while (res.next()) {
                 txtNama.setText(res.getString("nama"));
-                abs.setNip(res.getString("nip"));
+                //abs.setNip(res.getString("nip"));
             }
         } catch (SQLException ex) {
 
@@ -67,10 +70,35 @@ public class AbsenceForm extends javax.swing.JFrame {
 
     private void Refresh() {
         txtNip.requestFocus();
-        txtNip.setText("");
+        //txtNip.setText("");
         cbKet.setSelectedIndex(0);
         btnSave.setEnabled(true);
         btnUpdate.setEnabled(false);
+    }
+
+    private void CekNip() {
+        conn = new ConnectionDatabase();
+        try {
+            stmt = conn.connect().createStatement();
+            res = stmt.executeQuery("SELECT *FROM tb_user WHERE username = '"+ tb_user.getUsername() +"'");
+            while(res.next()){
+                txtNip.setText(res.getString("nip").trim());
+                abs.setNip(res.getString("nip"));
+                SearchNIP();
+            }
+        } catch (SQLException ex) {
+
+        }
+    }
+    
+    private String CurrentDate(){
+        
+        Date crntDate = Date.valueOf(LocalDate.now());
+        String a = crntDate.toString();
+        txtTanggal.setText(a);
+        String dateNow = txtTanggal.getText();
+        
+        return dateNow;
     }
 
     /**
@@ -100,8 +128,8 @@ public class AbsenceForm extends javax.swing.JFrame {
         cbKet = new javax.swing.JComboBox();
         btnSave = new javax.swing.JButton();
         btnUpdate = new javax.swing.JButton();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
         btnUpdate1 = new javax.swing.JButton();
+        txtTanggal = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         txtSearch = new javax.swing.JTextField();
 
@@ -147,6 +175,7 @@ public class AbsenceForm extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel3.setText("NIP");
 
+        txtNip.setEditable(false);
         txtNip.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtNip.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -207,6 +236,9 @@ public class AbsenceForm extends javax.swing.JFrame {
             }
         });
 
+        txtTanggal.setEditable(false);
+        txtTanggal.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -220,21 +252,6 @@ public class AbsenceForm extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
                         .addComponent(txtNama, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel7))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtPulang, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE)
-                            .addComponent(txtMasuk, javax.swing.GroupLayout.Alignment.TRAILING)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel8)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -244,7 +261,18 @@ public class AbsenceForm extends javax.swing.JFrame {
                                 .addComponent(btnUpdate)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnUpdate1, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(cbKet, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(cbKet, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtPulang, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE)
+                            .addComponent(txtMasuk, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtTanggal))))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -259,10 +287,10 @@ public class AbsenceForm extends javax.swing.JFrame {
                     .addComponent(jLabel4)
                     .addComponent(txtNama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(txtTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(11, 11, 11)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtMasuk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
@@ -349,7 +377,8 @@ public class AbsenceForm extends javax.swing.JFrame {
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
         // TODO add your handling code here:
-        rs = abs.ShowData();
+        String nip = txtNip.getText();
+        rs = abs.ShowData(nip);
         tbl.SetTabel(jTable1, rs, namaKolom, jmlKolom, lebar);
     }//GEN-LAST:event_formWindowActivated
 
@@ -384,8 +413,10 @@ public class AbsenceForm extends javax.swing.JFrame {
             cbKet.requestFocus();
         } else {
             SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd");
-            Date tgl = Date.valueOf(spf.format(jDateChooser1.getDate()));
-            abs.Save(nip, nama, tgl, masuk, pulang, ket);
+            String tggl = txtTanggal.getText();
+            Date tgll = Date.valueOf(tggl);
+            //Date tgl = Date.valueOf(spf.format(txtTanggal.getText()));
+            abs.Save(nip, nama, tgll, masuk, pulang, ket);
             Refresh();
         }
     }//GEN-LAST:event_btnSaveActionPerformed
@@ -396,7 +427,8 @@ public class AbsenceForm extends javax.swing.JFrame {
         btnSave.setEnabled(false);
         abs.setId(Integer.parseInt(jTable1.getValueAt(baris, 0).toString()));
         txtNama.setText(jTable1.getValueAt(baris, 2).toString());
-        jDateChooser1.setDate(Date.valueOf(jTable1.getValueAt(baris, 3).toString()));
+        txtTanggal.setText(jTable1.getValueAt(baris,3).toString());
+        //jDateChooser1.setDate(Date.valueOf(jTable1.getValueAt(baris, 3).toString()));
         txtMasuk.setText(jTable1.getValueAt(baris, 4).toString());
         txtPulang.setText(jTable1.getValueAt(baris, 5).toString());
         cbKet.setSelectedItem(jTable1.getValueAt(baris, 6).toString());
@@ -479,7 +511,6 @@ public class AbsenceForm extends javax.swing.JFrame {
     private javax.swing.JButton btnUpdate;
     private javax.swing.JButton btnUpdate1;
     private javax.swing.JComboBox cbKet;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -497,5 +528,6 @@ public class AbsenceForm extends javax.swing.JFrame {
     private javax.swing.JTextField txtNip;
     private javax.swing.JTextField txtPulang;
     private javax.swing.JTextField txtSearch;
+    private javax.swing.JTextField txtTanggal;
     // End of variables declaration//GEN-END:variables
 }

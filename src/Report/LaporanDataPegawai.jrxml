@@ -50,7 +50,7 @@
 				<textElement textAlignment="Center">
 					<font size="36" isBold="true"/>
 				</textElement>
-				<text><![CDATA[KOTA TANJUNGPINANG]]></text>
+				<text><![CDATA[PROVINSI KEPULAUAN RIAU]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="188" y="110" width="199" height="20" uuid="5aa088df-afb2-46da-8bbe-f3bc38043e11"/>

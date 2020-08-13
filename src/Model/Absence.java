@@ -86,7 +86,7 @@ public class Absence {
         }
     }
 
-    public String[][] ShowData() {
+    public String[][] ShowData(String nip) {
 
         res = null;
         String[][] data = null;
@@ -100,7 +100,7 @@ public class Absence {
             if (res.next()) {
                 jumlahBaris = res.getInt("Jumlah");
             }
-            query = "select *from tb_absensi";
+            query = "select *from tb_absensi WHERE nip = '"+ nip +"'";
             res = st.executeQuery(query);
             data = new String[jumlahBaris][7];
             int r = 0;

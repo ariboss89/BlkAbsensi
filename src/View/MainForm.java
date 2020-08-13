@@ -3,13 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package View;
 
 import Controller.ConnectionDatabase;
+import Model.tb_user;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import javax.swing.JOptionPane;
@@ -23,6 +25,11 @@ public class MainForm extends javax.swing.JFrame {
     /**
      * Creates new form MainForm
      */
+    private ConnectionDatabase conn;
+    private Statement stmt;
+    private ResultSet res;
+    tb_user usr = new tb_user();
+
     public MainForm() {
         initComponents();
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -30,9 +37,9 @@ public class MainForm extends javax.swing.JFrame {
         int y = (dim.height - getHeight()) / 2;
         setLocation(x, y);
         Run();
+        CekRole();
     }
 
-    
     public void Run() {
         new Thread() {
             public void run() {
@@ -63,6 +70,34 @@ public class MainForm extends javax.swing.JFrame {
             }
         }.start();//ini wajib  
     }
+
+    private void CekRole() {
+        conn = new ConnectionDatabase();
+        try {
+            stmt = conn.connect().createStatement();
+            res = stmt.executeQuery("SELECT *FROM tb_user WHERE username = '" + tb_user.getUsername() + "'");
+            while (res.next()) {
+                usr.setRole(res.getString("role"));
+
+                if (usr.getRole().equals("Pegawai")) {
+                    menu_bagian.setVisible(false);
+                    menu_pegawai.setVisible(false);
+                    menuReport.setVisible(false);
+                    menu_penggua.setVisible(false);
+                }
+                else if (usr.getRole().equals("Admin")){
+                    menu_absensi.setVisible(false);
+                }
+            }
+        } catch (SQLException ex) {
+
+        }
+    }
+
+    private void Cek() {
+
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -81,11 +116,13 @@ public class MainForm extends javax.swing.JFrame {
         lblJam = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu2 = new javax.swing.JMenu();
-        jMenuItem4 = new javax.swing.JMenuItem();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenu4 = new javax.swing.JMenu();
-        jMenuItem3 = new javax.swing.JMenuItem();
+        menu_bagian = new javax.swing.JMenuItem();
+        menu_pegawai = new javax.swing.JMenuItem();
+        menu_absensi = new javax.swing.JMenuItem();
+        menu_penggua = new javax.swing.JMenuItem();
+        menuReport = new javax.swing.JMenu();
+        menu_laporan = new javax.swing.JMenuItem();
+        jMenu6 = new javax.swing.JMenu();
         jMenu5 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -195,44 +232,61 @@ public class MainForm extends javax.swing.JFrame {
         jMenu2.setText("INPUT");
         jMenu2.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
 
-        jMenuItem4.setText("DATA BAGIAN");
-        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+        menu_bagian.setText("DATA BAGIAN");
+        menu_bagian.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem4ActionPerformed(evt);
+                menu_bagianActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem4);
+        jMenu2.add(menu_bagian);
 
-        jMenuItem1.setText("DATA PEGAWAI");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        menu_pegawai.setText("DATA PEGAWAI");
+        menu_pegawai.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                menu_pegawaiActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem1);
+        jMenu2.add(menu_pegawai);
 
-        jMenuItem2.setText("DATA ABSENSI");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+        menu_absensi.setText("DATA ABSENSI");
+        menu_absensi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
+                menu_absensiActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem2);
+        jMenu2.add(menu_absensi);
+
+        menu_penggua.setText("DATA PENGGUNA");
+        menu_penggua.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menu_pengguaActionPerformed(evt);
+            }
+        });
+        jMenu2.add(menu_penggua);
 
         jMenuBar1.add(jMenu2);
 
-        jMenu4.setText("REPORT");
-        jMenu4.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        menuReport.setText("REPORT");
+        menuReport.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
 
-        jMenuItem3.setText("MENU LAPORAN ABSENSI PEGAWAI");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+        menu_laporan.setText("MENU LAPORAN ABSENSI PEGAWAI");
+        menu_laporan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
+                menu_laporanActionPerformed(evt);
             }
         });
-        jMenu4.add(jMenuItem3);
+        menuReport.add(menu_laporan);
 
-        jMenuBar1.add(jMenu4);
+        jMenuBar1.add(menuReport);
+
+        jMenu6.setText("PENGATURAN");
+        jMenu6.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jMenu6.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenu6MouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(jMenu6);
 
         jMenu5.setText("LOG OUT");
         jMenu5.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
@@ -273,36 +327,46 @@ public class MainForm extends javax.swing.JFrame {
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
         // TODO add your handling code here:
         java.sql.Connection conn = new ConnectionDatabase().connect();
-        try{
+        try {
             java.sql.Statement stmt = conn.createStatement();
             java.sql.ResultSet res = stmt.executeQuery("select count(nip) as sum from tb_pegawai");
-            while(res.next()){
+            while (res.next()) {
                 lblJumlahPegawai.setText(res.getString("sum"));
             }
-        }catch(SQLException ex){
-            
+        } catch (SQLException ex) {
+
         }
     }//GEN-LAST:event_formWindowActivated
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void menu_pegawaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_pegawaiActionPerformed
         // TODO add your handling code here:
         new EmployeeForm().show();
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_menu_pegawaiActionPerformed
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    private void menu_absensiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_absensiActionPerformed
         // TODO add your handling code here:
         new AbsenceForm().show();
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+    }//GEN-LAST:event_menu_absensiActionPerformed
 
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+    private void menu_laporanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_laporanActionPerformed
         // TODO add your handling code here:
         new ReportForm().show();
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
+    }//GEN-LAST:event_menu_laporanActionPerformed
 
-    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+    private void menu_bagianActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_bagianActionPerformed
         // TODO add your handling code here:
         new DivisionForm().show();
-    }//GEN-LAST:event_jMenuItem4ActionPerformed
+    }//GEN-LAST:event_menu_bagianActionPerformed
+
+    private void menu_pengguaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_pengguaActionPerformed
+        // TODO add your handling code here:
+        new UserForm().show();
+    }//GEN-LAST:event_menu_pengguaActionPerformed
+
+    private void jMenu6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu6MouseClicked
+        // TODO add your handling code here:
+        new SettingForm().show();
+    }//GEN-LAST:event_jMenu6MouseClicked
 
     /**
      * @param args the command line arguments
@@ -343,17 +407,19 @@ public class MainForm extends javax.swing.JFrame {
     private Controller.Background background1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
+    private javax.swing.JMenu jMenu6;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel lblJam;
     private javax.swing.JLabel lblJumlahPegawai;
+    private javax.swing.JMenu menuReport;
+    private javax.swing.JMenuItem menu_absensi;
+    private javax.swing.JMenuItem menu_bagian;
+    private javax.swing.JMenuItem menu_laporan;
+    private javax.swing.JMenuItem menu_pegawai;
+    private javax.swing.JMenuItem menu_penggua;
     // End of variables declaration//GEN-END:variables
 }

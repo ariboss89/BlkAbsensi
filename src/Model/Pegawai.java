@@ -33,12 +33,12 @@ public class Pegawai {
         this.idbagian = idbagian;
     }
     
-    public void Save(String nip, String nama, Date tanggal, String pekerjaan, String status, String agama, String idbagian, String alamat) {
+    public void Save(String nip, String nama, Date tanggal, String pekerjaan, String status, String agama, String idbagian, String jabatan, String alamat) {
         con = new ConnectionDatabase();
         con.connect();
         try {
             st = con.conn.createStatement();
-            query = "insert into tb_pegawai(nip, nama, tanggal, pekerjaan, status, agama, idbagian, alamat)values('" + nip + "','" + nama + "','" + tanggal + "','" + pekerjaan + "','" + status + "','" + agama + "','" + idbagian + "', '"+alamat+"')";
+            query = "insert into tb_pegawai(nip, nama, tanggal, pekerjaan, status, agama, idbagian, jabatan, alamat)values('" + nip + "','" + nama + "','" + tanggal + "','" + pekerjaan + "','" + status + "','" + agama + "','" + idbagian + "','" + jabatan + "', '"+alamat+"')";
             st.executeUpdate(query);
             st.close();
             con.conn.close();
@@ -47,12 +47,12 @@ public class Pegawai {
         }
     }
     
-    public void Update(String nip, String nama, Date tanggal, String pekerjaan, String status, String agama, String idbagian, String alamat) {
+    public void Update(String nip, String nama, Date tanggal, String pekerjaan, String status, String agama, String idbagian, String jabatan, String alamat) {
         con = new ConnectionDatabase();
         con.connect();
         try {
             st = con.conn.createStatement();
-            query = "update tb_pegawai set nama='" + nama + "', tanggal='" + tanggal + "', pekerjaan='" + pekerjaan + "', status='" + status + "', agama = '"+ agama +"', idbagian='" + idbagian + "', alamat='" + alamat + "' where nip = '" + nip + "'";
+            query = "update tb_pegawai set nama='" + nama + "', tanggal='" + tanggal + "', pekerjaan='" + pekerjaan + "', status='" + status + "', agama = '"+ agama +"', idbagian='" + idbagian + "', jabatan='" + jabatan + "', alamat='" + alamat + "' where nip = '" + nip + "'";
             st.executeUpdate(query);
             st.close();
             con.conn.close();
@@ -93,7 +93,7 @@ public class Pegawai {
             }
             query = "select *from tb_pegawai";
             res = st.executeQuery(query);
-            data = new String[jumlahBaris][8];
+            data = new String[jumlahBaris][9];
             int r = 0;
             while (res.next()) {
                 data[r][0] = res.getString("nip");
@@ -103,14 +103,15 @@ public class Pegawai {
                 data[r][4] = res.getString("status");
                 data[r][5] = res.getString("agama");
                 data[r][6] = res.getString("idbagian");
-                data[r][7] = res.getString("alamat");
+                data[r][7] = res.getString("jabatan");
+                data[r][8] = res.getString("alamat");
                 r++;
             }
             int jmlBaris = r;
             String[][] tmpArray = data;
-            data = new String[jmlBaris][8];
+            data = new String[jmlBaris][9];
             for (r = 0; r < jmlBaris; r++) {
-                for (int c = 0; c < 8; c++) {
+                for (int c = 0; c < 9; c++) {
                     data[r][c] = tmpArray[r][c];
                 }
             }
@@ -138,7 +139,7 @@ public class Pegawai {
             }
             query = "select *from tb_pegawai where nip like '%"+ search +"%' or nama like '%"+ search +"%'";
             res = st.executeQuery(query);
-            data = new String[jumlahBaris][8];
+            data = new String[jumlahBaris][9];
             int r = 0;
             while (res.next()) {
                 data[r][0] = res.getString("nip");
@@ -148,14 +149,15 @@ public class Pegawai {
                 data[r][4] = res.getString("status");
                 data[r][5] = res.getString("agama");
                 data[r][6] = res.getString("idbagian");
-                data[r][7] = res.getString("alamat");
+                data[r][7] = res.getString("jabatan");
+                data[r][8] = res.getString("alamat");
                 r++;
             }
             int jmlBaris = r;
             String[][] tmpArray = data;
-            data = new String[jmlBaris][8];
+            data = new String[jmlBaris][9];
             for (r = 0; r < jmlBaris; r++) {
-                for (int c = 0; c < 8; c++) {
+                for (int c = 0; c < 9; c++) {
                     data[r][c] = tmpArray[r][c];
                 }
             }

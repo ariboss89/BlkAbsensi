@@ -5,6 +5,8 @@
  */
 package View;
 
+import Dao.UserDao;
+import Model.tb_user;
 import javax.swing.JOptionPane;
 
 /**
@@ -16,6 +18,8 @@ public class LoginForm extends javax.swing.JFrame {
     /**
      * Creates new form Login
      */
+    UserDao usr = new UserDao();
+    
     public LoginForm() {
         initComponents();
         setLocationRelativeTo(this);
@@ -151,13 +155,10 @@ public class LoginForm extends javax.swing.JFrame {
         if (username.equals("") || password.equals("")) {
             JOptionPane.showMessageDialog(null, "Username And Password is Wrong ...");
             jTextField1.requestFocus();
-        } else if (username.equals("admin") && password.equals("1234")) {
-            JOptionPane.showMessageDialog(null, "Welcome Admin");
-            new MainForm().show();
-            dispose();
         } else {
-            JOptionPane.showMessageDialog(null, "Username And Password is Wrong ...");
-            jTextField1.requestFocus();
+            tb_user.setUsername(username);
+            usr.Login(username, password);
+            dispose();
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
