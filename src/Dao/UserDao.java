@@ -58,6 +58,21 @@ public class UserDao extends tb_user{
         }
     }
     
+    public void CekNip(String nip){
+        con = new ConnectionDatabase();
+        con.connect();        
+        try{
+            Statement st = con.conn.createStatement();
+            res = st.executeQuery("select *from tb_user where nip = '"+nip+"'"); 
+            if(res.next()){
+                JOptionPane.showMessageDialog(null, "NIP "+nip+" Telah Memiliki Akun !!");
+            }
+            
+        }catch(SQLException ex){
+            
+        }
+    }
+    
     public void Save(String username, String password, String nip) {
         con = new ConnectionDatabase();
         con.connect();

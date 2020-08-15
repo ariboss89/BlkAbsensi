@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package View;
 
 import Controller.ConnectionDatabase;
@@ -34,7 +33,7 @@ public class UserForm extends javax.swing.JFrame {
     String[] namaKolom = {"Nip", "Username"};
     int jmlKolom = namaKolom.length;
     int[] lebar = {400, 400};
-    
+
     public UserForm() {
         initComponents();
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -44,18 +43,19 @@ public class UserForm extends javax.swing.JFrame {
         ShowNip();
     }
 
-    private void ShowNip(){
+    private void ShowNip() {
         conn = new ConnectionDatabase();
-        try{
+        try {
             stmt = conn.connect().createStatement();
             res = stmt.executeQuery("SELECT *FROM tb_pegawai");
-            while(res.next()){
+            while (res.next()) {
                 jComboBox1.addItem(res.getString("nip"));
             }
-        }catch(SQLException ex){
-            
+        } catch (SQLException ex) {
+
         }
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -72,6 +72,8 @@ public class UserForm extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox();
         jButton1 = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        txtNama = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -118,6 +120,17 @@ public class UserForm extends javax.swing.JFrame {
             }
         });
 
+        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel6.setText("NAMA");
+
+        txtNama.setEditable(false);
+        txtNama.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtNama.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtNamaKeyTyped(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -137,7 +150,11 @@ public class UserForm extends javax.swing.JFrame {
                             .addComponent(txtUsername, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addGap(277, 277, 277))
+                            .addComponent(txtNama))
                         .addContainerGap())))
         );
         jPanel2Layout.setVerticalGroup(
@@ -147,6 +164,10 @@ public class UserForm extends javax.swing.JFrame {
                 .addComponent(jLabel4)
                 .addGap(11, 11, 11)
                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(txtNama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -232,7 +253,7 @@ public class UserForm extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -244,6 +265,16 @@ public class UserForm extends javax.swing.JFrame {
 
     private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
         // TODO add your handling code here:
+        conn = new ConnectionDatabase();
+        try {
+            stmt = conn.connect().createStatement();
+            res = stmt.executeQuery("SELECT *FROM tb_pegawai WHERE nip = '" + jComboBox1.getSelectedItem().toString() + "'");
+            while (res.next()) {
+                txtNama.setText(res.getString("nama"));
+            }
+        } catch (SQLException e) {
+
+        }
         txtUsername.requestFocus();
     }//GEN-LAST:event_jComboBox1ItemStateChanged
 
@@ -253,13 +284,29 @@ public class UserForm extends javax.swing.JFrame {
         String username = txtUsername.getText().trim();
         usr.setPassword("123456");
         usr.CekUsername(username);
-        
-        if(username == ""){
-            JOptionPane.showMessageDialog(null,"Username Tidak Boleh Kosong !!");
-            txtUsername.requestFocus();
+        //usr.CekNip(nip);
+        conn = new ConnectionDatabase();
+        try{
+            stmt = conn.connect().createStatement();
+            res = stmt.executeQuery("SELECT *FROM tb_user WHERE nip = '"+nip+"'");
+            if(res.next()){
+               JOptionPane.showMessageDialog(null, "NIP Telah Memiliki Akun !!");
+               jComboBox1.setSelectedIndex(0);
+            }
+        }catch(SQLException ex){
+            
         }
-        else{
-            usr.Save(username, usr.getPassword(), nip );
+
+        if (username.equals("")) {
+            JOptionPane.showMessageDialog(null, "Username Tidak Boleh Kosong !!");
+            txtUsername.requestFocus();
+        } else if (jComboBox1.getSelectedItem().equals("PILIH")) {
+            JOptionPane.showMessageDialog(null, "Silahkan Pilih NIP !!");
+            txtNama.setText("");
+            txtUsername.setText("");
+            jComboBox1.requestFocus();
+        } else {
+            usr.Save(username, usr.getPassword(), nip);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -275,6 +322,10 @@ public class UserForm extends javax.swing.JFrame {
         rs = usr.Search(search);
         tbl.SetTabel(jTable1, rs, namaKolom, jmlKolom, lebar);
     }//GEN-LAST:event_txtSearchKeyReleased
+
+    private void txtNamaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNamaKeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNamaKeyTyped
 
     /**
      * @param args the command line arguments
@@ -318,10 +369,12 @@ public class UserForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JTextField txtNama;
     private javax.swing.JTextField txtSearch;
     private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables

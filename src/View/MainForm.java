@@ -88,6 +88,10 @@ public class MainForm extends javax.swing.JFrame {
                 else if (usr.getRole().equals("Admin")){
                     menu_absensi.setVisible(false);
                 }
+                else{
+                    JOptionPane.showMessageDialog(null, "Silahkan Login Untuk Melanjutkan !!!");
+                    dispose();
+                }
             }
         } catch (SQLException ex) {
 
@@ -350,7 +354,7 @@ public class MainForm extends javax.swing.JFrame {
 
     private void menu_laporanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_laporanActionPerformed
         // TODO add your handling code here:
-        new ReportForm().show();
+        new ReportForm1().show();
     }//GEN-LAST:event_menu_laporanActionPerformed
 
     private void menu_bagianActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_bagianActionPerformed

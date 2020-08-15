@@ -71,6 +71,7 @@ public class EmployeeForm extends javax.swing.JFrame {
         cbStPerkawinan.setSelectedIndex(0);
         cbAgama.setSelectedIndex(0);
         cbBagian.setSelectedIndex(0);
+        cbJabatan.setSelectedIndex(0);
         txtAlamat.setText("");
         jTextField1.setText("");
         btnSave.setEnabled(true);
@@ -481,7 +482,7 @@ public class EmployeeForm extends javax.swing.JFrame {
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // TODO add your handling code here:
         nip = txtNik.getText().trim();
-        nama = txtNama.getText().trim();
+        nama = txtNama.getText().toUpperCase().trim();
         pekerjaan = cbStPekerjaan.getSelectedItem().toString();
         status = cbStPerkawinan.getSelectedItem().toString();
         agama = cbAgama.getSelectedItem().toString();
