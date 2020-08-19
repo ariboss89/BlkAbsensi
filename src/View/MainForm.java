@@ -321,7 +321,7 @@ public class MainForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         int ok = JOptionPane.showConfirmDialog(null, "Apakah Anda Yakin Ingin Keluar ?", "Konnfirmasi", JOptionPane.YES_NO_OPTION);
         if (ok == 0) {
-            JOptionPane.showMessageDialog(null, "Goodbye Admin");
+            JOptionPane.showMessageDialog(null, "Goodbye !!");
             System.exit(ok);
         } else {
 

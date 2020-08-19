@@ -80,8 +80,8 @@ public class AbsenceForm extends javax.swing.JFrame {
         conn = new ConnectionDatabase();
         try {
             stmt = conn.connect().createStatement();
-            res = stmt.executeQuery("SELECT *FROM tb_user WHERE username = '"+ tb_user.getUsername() +"'");
-            while(res.next()){
+            res = stmt.executeQuery("SELECT *FROM tb_user WHERE username = '" + tb_user.getUsername() + "'");
+            while (res.next()) {
                 txtNip.setText(res.getString("nip").trim());
                 abs.setNip(res.getString("nip"));
                 SearchNIP();
@@ -90,14 +90,14 @@ public class AbsenceForm extends javax.swing.JFrame {
 
         }
     }
-    
-    private String CurrentDate(){
-        
+
+    private String CurrentDate() {
+
         Date crntDate = Date.valueOf(LocalDate.now());
         String a = crntDate.toString();
         txtTanggal.setText(a);
         String dateNow = txtTanggal.getText();
-        
+
         return dateNow;
     }
 
@@ -404,20 +404,29 @@ public class AbsenceForm extends javax.swing.JFrame {
         masuk = txtMasuk.getText();
         pulang = txtPulang.getText();
         ket = cbKet.getSelectedItem().toString().trim();
+        SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd");
+        String tggl = txtTanggal.getText();
+        Date tgll = Date.valueOf(tggl);
 
-        if (txtNama.getText().equals("")) {
-            JOptionPane.showMessageDialog(null, "Nama Pegawai Kosong, Silahkan Isi Dahulu !!!");
-            txtNip.requestFocus();
-        } else if (cbKet.getSelectedIndex() == 0) {
-            JOptionPane.showMessageDialog(null, "Silahkan Pilih Keterangan");
-            cbKet.requestFocus();
-        } else {
-            SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd");
-            String tggl = txtTanggal.getText();
-            Date tgll = Date.valueOf(tggl);
-            //Date tgl = Date.valueOf(spf.format(txtTanggal.getText()));
-            abs.Save(nip, nama, tgll, masuk, pulang, ket);
-            Refresh();
+        try {
+            stmt = conn.connect().createStatement();
+            res = stmt.executeQuery("SELECT *FROM tb_absensi WHERE tanggal = '  " + tgll + "' AND nip = '"+txtNip.getText()+"'");
+            if (res.next()) {
+                JOptionPane.showMessageDialog(null, "Anda Telah Absen Hari Ini !!");
+                txtNama.setText("");
+            } else if (txtNama.getText().equals("")) {
+                JOptionPane.showMessageDialog(null, "Nama Pegawai Kosong, Silahkan Isi Dahulu !!!");
+                txtNip.requestFocus();
+            } else if (cbKet.getSelectedIndex() == 0) {
+                JOptionPane.showMessageDialog(null, "Silahkan Pilih Keterangan");
+                cbKet.requestFocus();
+            } else {
+                //Date tgl = Date.valueOf(spf.format(txtTanggal.getText()));
+                abs.Save(nip, nama, tgll, masuk, pulang, ket);
+                Refresh();
+            }
+        } catch (SQLException ex) {
+
         }
     }//GEN-LAST:event_btnSaveActionPerformed
 
@@ -427,7 +436,7 @@ public class AbsenceForm extends javax.swing.JFrame {
         btnSave.setEnabled(false);
         abs.setId(Integer.parseInt(jTable1.getValueAt(baris, 0).toString()));
         txtNama.setText(jTable1.getValueAt(baris, 2).toString());
-        txtTanggal.setText(jTable1.getValueAt(baris,3).toString());
+        txtTanggal.setText(jTable1.getValueAt(baris, 3).toString());
         //jDateChooser1.setDate(Date.valueOf(jTable1.getValueAt(baris, 3).toString()));
         txtMasuk.setText(jTable1.getValueAt(baris, 4).toString());
         txtPulang.setText(jTable1.getValueAt(baris, 5).toString());

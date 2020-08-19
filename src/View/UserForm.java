@@ -286,27 +286,25 @@ public class UserForm extends javax.swing.JFrame {
         usr.CekUsername(username);
         //usr.CekNip(nip);
         conn = new ConnectionDatabase();
-        try{
+        try {
             stmt = conn.connect().createStatement();
-            res = stmt.executeQuery("SELECT *FROM tb_user WHERE nip = '"+nip+"'");
-            if(res.next()){
-               JOptionPane.showMessageDialog(null, "NIP Telah Memiliki Akun !!");
-               jComboBox1.setSelectedIndex(0);
+            res = stmt.executeQuery("SELECT *FROM tb_user WHERE nip = '" + nip + "'");
+            if (res.next()) {
+                JOptionPane.showMessageDialog(null, "NIP Telah Memiliki Akun !!");
+                jComboBox1.setSelectedIndex(0);
+            } else if (username.equals("")) {
+                JOptionPane.showMessageDialog(null, "Username Tidak Boleh Kosong !!");
+                txtUsername.requestFocus();
+            } else if (jComboBox1.getSelectedItem().equals("PILIH")) {
+                JOptionPane.showMessageDialog(null, "Silahkan Pilih NIP !!");
+                txtNama.setText("");
+                txtUsername.setText("");
+                jComboBox1.requestFocus();
+            } else {
+                usr.Save(username, usr.getPassword(), nip);
             }
-        }catch(SQLException ex){
-            
-        }
+        } catch (SQLException ex) {
 
-        if (username.equals("")) {
-            JOptionPane.showMessageDialog(null, "Username Tidak Boleh Kosong !!");
-            txtUsername.requestFocus();
-        } else if (jComboBox1.getSelectedItem().equals("PILIH")) {
-            JOptionPane.showMessageDialog(null, "Silahkan Pilih NIP !!");
-            txtNama.setText("");
-            txtUsername.setText("");
-            jComboBox1.requestFocus();
-        } else {
-            usr.Save(username, usr.getPassword(), nip);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
